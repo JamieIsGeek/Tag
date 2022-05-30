@@ -13,7 +13,7 @@ public final class Tag extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        getCommand("pkt").setExecutor(new TagCommand());
+        getCommand("tag").setExecutor(new TagCommand());
 
         logger.info("");
         logger.info("=+=+=+=+=+=+=+=+=+=+=+=+=+=");
