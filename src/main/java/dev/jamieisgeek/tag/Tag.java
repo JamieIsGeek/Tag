@@ -12,11 +12,12 @@ public final class Tag extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        new Game();
 
         getCommand("tag").setExecutor(new TagCommand());
-        getServer().getPluginManager().registerEvents(new Game(), this);
+        getServer().getPluginManager().registerEvents(new Events(), this);
 
-        new Game();
+
         logger.info("");
         logger.info("=+=+=+=+=+=+=+=+=+=+=+=+=+=");
         logger.info("ParkourTag has Enabled!");

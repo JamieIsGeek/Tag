@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
-public class Game implements Listener {
+public class Game {
 
     private Integer startTimer = 30;
     private Integer roundTimer = 300;
@@ -135,15 +135,8 @@ public class Game implements Listener {
             public void run() {
                 beginTimer--;
 
-                if(beginTimer < 6) {
-                    queuedPlayers.forEach((UUID uuid) -> {
-                        Player player = Bukkit.getPlayer(uuid);
-                        player.sendMessage(prefix + beginTimer);
-                    });
-
-                    if(beginTimer == 0) {
-                        this.cancel();
-                    }
+                if(beginTimer == 0) {
+                    this.cancel();
                 }
             }
         }.runTaskTimer(plugin, 0, 20);
@@ -156,6 +149,8 @@ public class Game implements Listener {
 
     public void endGame() {
         inProgress = false;
+        hunter = null;
+        hunterID = null;
 
         queuedPlayers.forEach((UUID uuid) -> {
             Player player = Bukkit.getPlayer(uuid);
@@ -284,7 +279,7 @@ public class Game implements Listener {
                         this.cancel();
                     }
 
-                    if(startTimer < 6) {
+                    if(startTimer < 6 || startTimer % 5 == 0) {
                         queuedPlayers.forEach((UUID pUUID) -> {
                             Player player = Bukkit.getPlayer(pUUID);
                             player.sendMessage(prefix + "Game starts in: " + startTimer);
@@ -324,57 +319,27 @@ public class Game implements Listener {
     }
 
 
-    @EventHandler
-    public void onPlayerHit(EntityDamageByEntityEvent e) {
+    public ArrayList<UUID> getQueue() {
 
-        if(e.getDamager().getType() == EntityType.PLAYER) {
-            Player attacker = (Player) e.getDamager();
-
-            if(e.getEntity().getType() == EntityType.PLAYER) {
-                Player attacked = (Player) e.getEntity();
-
-                e.setCancelled(true);
-                if(attacker.getUniqueId() == hunterID) {
-                    attacked.setGameMode(GameMode.SPECTATOR);
-                    alivePlayers.remove(attacked.getUniqueId());
-
-                    queuedPlayers.forEach((UUID uuid) -> {
-                        Player player = Bukkit.getPlayer(uuid);
-                        player.sendMessage(prefix + ChatColor.RED + attacked.getName() + ChatColor.WHITE + " has been " + ChatColor.BOLD + "" + ChatColor.RED + "eliminated" + ChatColor.stripColor("") + ChatColor.WHITE + "!");
-                    });
-
-                    if(alivePlayers.size() == 0) {
-                        endGame();
-                    }
-                }
-            }
-        }
+        return this.queuedPlayers;
     }
 
-    @EventHandler
-    public void onPlayerLeave(PlayerQuitEvent e) {
-
-        if(queuedPlayers.contains(e.getPlayer().getUniqueId())) {
-            queuedPlayers.remove(e.getPlayer().getUniqueId());
-            if(alivePlayers.contains(e.getPlayer().getUniqueId())) {
-                alivePlayers.remove(e.getPlayer().getUniqueId());
-
-                queuedPlayers.forEach((UUID uuid) -> {
-                    Player p = Bukkit.getPlayer(uuid);
-                    p.sendMessage(prefix + e.getPlayer().getDisplayName() + " has left the game!");
-                });
-
-                if(alivePlayers.size() == 0) {
-                    endGame();
-                }
-
-                if(e.getPlayer().getUniqueId() == hunterID) {
-                    endGame();
-                }
-            }
-        }
-
+    public ArrayList<UUID> getAlive() {
+        return this.alivePlayers;
     }
+
+    public UUID getHunterID() {
+        return this.hunterID;
+    }
+
+    public String getPrefix() {
+        return this.prefix;
+    }
+
+    public boolean getProgress() {
+        return this.inProgress;
+    }
+
 
     public Game() {
         game = this;
