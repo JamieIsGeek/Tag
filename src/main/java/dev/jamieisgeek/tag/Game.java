@@ -34,20 +34,29 @@ public class Game implements Listener {
     public static Game game;
 
     private String shortInteger(int roundTimer) {
-        int seconds = roundTimer % 60;
-        int minutes = (roundTimer / 60) % 60;
-        int hours = (roundTimer / 60) / 60;
-
-        String stringTime = "";
-        if(hours != 0){
-            stringTime += String.valueOf(hours) + ":";
+        String string = "";
+        int minutes = 0;
+        int seconds = 0;
+        if (roundTimer / 60 / 60 / 24 >= 1) {
+            roundTimer -= roundTimer / 60 / 60 / 24 * 60 * 60 * 24;
         }
-        if(minutes != 0) {
-            stringTime += String.valueOf(minutes) + ":";
+        if (roundTimer / 60 >= 1) {
+            minutes = roundTimer / 60;
+            roundTimer -= roundTimer / 60 * 60;
         }
-        stringTime += String.valueOf(seconds);
-
-        return stringTime;
+        if (roundTimer >= 1)
+            seconds = roundTimer;
+        if (minutes <= 9) {
+            string = String.valueOf(string) + "0" + minutes + ":";
+        } else {
+            string = String.valueOf(string) + minutes + ":";
+        }
+        if (seconds <= 9) {
+            string = String.valueOf(string) + "0" + seconds;
+        } else {
+            string = String.valueOf(string) + seconds;
+        }
+        return string;
     }
 
 
@@ -114,23 +123,28 @@ public class Game implements Listener {
             player.sendMessage(prefix + "Welcome to Parkour Tag!");
             player.sendMessage(prefix + "This gamemode is simple, run from the hunter while doing parkour!");
             player.sendMessage(prefix + "A random player has been declared as the 'Hunter' you must run away from them and not get hit!");
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                }
-            }, 20L);
-
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    beginTimer--;
-                    player.sendMessage(prefix + beginTimer);
-                }
-            }.runTaskTimer(plugin, 0, 20);
-
-            updateScoreboard();
         });
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            @Override
+            public void run() {
+            }
+        }, 20L);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                beginTimer--;
+
+                if(beginTimer < 6) {
+                    queuedPlayers.forEach((UUID uuid) -> {
+                        Player player = Bukkit.getPlayer(uuid);
+                        player.sendMessage(prefix + beginTimer);
+                    });
+                }
+            }
+        }.runTaskTimer(plugin, 0, 20);
+
+        updateScoreboard();
     }
 
 
@@ -178,51 +192,47 @@ public class Game implements Listener {
 
 
     private void updateScoreboard() {
-        queuedPlayers.forEach((UUID uuid) -> {
-            Player p = Bukkit.getPlayer(uuid);
-
-            String role;
-            if(uuid.equals(hunterID)) {
-                role = "Hunter";
-            } else {
-                role = "Runner";
-            }
-
             new BukkitRunnable() {
                 @Override
                 public void run() {
-
                     roundTimer--;
                     if(roundTimer == 0) {
                         this.cancel();
                         endGame();
                     }
 
-                    roundTimer--;
+                    queuedPlayers.forEach((UUID uuid) -> {
+                        Player p = Bukkit.getPlayer(uuid);
 
-                    ScoreboardManager manager = Bukkit.getScoreboardManager();
-                    Scoreboard scoreboard = manager.getNewScoreboard();
-                    Objective objective = scoreboard.registerNewObjective("main", "dummy", ChatColor.BOLD + "" + ChatColor.DARK_GREEN + "Tag");
-                    objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+                        String role;
+                        if(uuid.equals(hunterID)) {
+                            role = "Hunter";
+                        } else {
+                            role = "Runner";
+                        }
+
+                        ScoreboardManager manager = Bukkit.getScoreboardManager();
+                        Scoreboard scoreboard = manager.getNewScoreboard();
+                        Objective objective = scoreboard.registerNewObjective("main", "dummy", ChatColor.BOLD + "" + ChatColor.DARK_GREEN + "Tag");
+                        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
 
-                    Score hunterScore = objective.getScore(ChatColor.RED + "Hunter: " + ChatColor.WHITE + hunter.getName());
-                    Score inGameScore = objective.getScore(ChatColor.RED + "Players: " + ChatColor.WHITE + alivePlayers.size() + "/" + (queuedPlayers.size() - 1));
-                    Score roleScore = objective.getScore(ChatColor.RED + "Role: " + ChatColor.WHITE + role);
-                    Score emptyScore = objective.getScore("");
-                    Score timerScore = objective.getScore(ChatColor.RED + "Round Time: " + ChatColor.WHITE + shortInteger(roundTimer));
+                        Score hunterScore = objective.getScore(ChatColor.RED + "Hunter: " + ChatColor.WHITE + hunter.getName());
+                        Score inGameScore = objective.getScore(ChatColor.RED + "Players: " + ChatColor.WHITE + alivePlayers.size() + "/" + (queuedPlayers.size() - 1));
+                        Score roleScore = objective.getScore(ChatColor.RED + "Role: " + ChatColor.WHITE + role);
+                        Score emptyScore = objective.getScore("");
+                        Score timerScore = objective.getScore(ChatColor.RED + "Round Time: " + ChatColor.WHITE + shortInteger(roundTimer));
 
-                    roleScore.setScore(5);
-                    hunterScore.setScore(4);
-                    inGameScore.setScore(3);
-                    emptyScore.setScore(2);
-                    timerScore.setScore(1);
+                        roleScore.setScore(5);
+                        hunterScore.setScore(4);
+                        inGameScore.setScore(3);
+                        emptyScore.setScore(2);
+                        timerScore.setScore(1);
 
-                    p.setScoreboard(scoreboard);
-
+                        p.setScoreboard(scoreboard);
+                    });
                 }
             }.runTaskTimer(plugin, 0, 20);
-        });
     }
 
 
@@ -263,17 +273,14 @@ public class Game implements Listener {
             @Override
             public void run() {
                 if(queuedPlayers.size() >= 3) {
-                    queuedPlayers.forEach((UUID pUUID) -> {
-                        Player player = Bukkit.getPlayer(pUUID);
-                        player.sendMessage(prefix + "The game will start in 30 seconds!");
-                    });
+
                     startTimer--;
                     if(startTimer == 0) {
                         beginGame();
                         this.cancel();
                     }
 
-                    if(startTimer % 5 == 0 || startTimer >= 5) {
+                    if(startTimer < 6) {
                         queuedPlayers.forEach((UUID pUUID) -> {
                             Player player = Bukkit.getPlayer(pUUID);
                             player.sendMessage(prefix + "Game starts in: " + startTimer);
