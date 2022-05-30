@@ -14,7 +14,9 @@ public final class Tag extends JavaPlugin {
     public void onEnable() {
 
         getCommand("tag").setExecutor(new TagCommand());
+        getServer().getPluginManager().registerEvents(new Game(), this);
 
+        new Game();
         logger.info("");
         logger.info("=+=+=+=+=+=+=+=+=+=+=+=+=+=");
         logger.info("ParkourTag has Enabled!");

@@ -21,7 +21,7 @@ public class TagCommand implements CommandExecutor {
             if(args[0].equalsIgnoreCase("start")) {
 
                 if(p.hasPermission("tag.start")) {
-                    Game game = new Game(p);
+                    Game game = Game.getGame();
                     game.beginGame();
                 } else {
                     p.sendMessage(prefix + "Missing Permission: tag.start");
@@ -31,7 +31,7 @@ public class TagCommand implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("join")) {
 
                 if(p.hasPermission("tag.join")) {
-                    Game game = new Game(p);
+                    Game game = Game.getGame();
                     game.joinGame(p);
                 } else {
                     p.sendMessage(prefix + "Missing Permission: tag.join");
@@ -40,7 +40,7 @@ public class TagCommand implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("end")) {
 
                 if(p.hasPermission("tag.end")) {
-                    Game game = new Game(p);
+                    Game game = Game.getGame();
                     game.endGame();
                 } else {
                     p.sendMessage(prefix + "Missing Permission: tag.end");
@@ -49,7 +49,7 @@ public class TagCommand implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("leave")) {
 
                 if(p.hasPermission("tag.leave")) {
-                    Game game = new Game(p);
+                    Game game = Game.getGame();
                     game.leaveQueue(p);
                 } else {
                     p.sendMessage(prefix + "Missing Permission: tag.leave");
@@ -57,7 +57,7 @@ public class TagCommand implements CommandExecutor {
             } else if (args[0].equalsIgnoreCase("list")) {
 
                 if(p.hasPermission("tag.list")) {
-                    Game game = new Game(p);
+                    Game game = Game.getGame();
                     game.listQueue(p);
                 } else {
                     p.sendMessage(prefix + "Missing Permission: tag.list");

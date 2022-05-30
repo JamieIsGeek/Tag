@@ -31,6 +31,7 @@ public class Game implements Listener {
     private Plugin plugin = Tag.getPlugin(Tag.class);
     private boolean inProgress = false;
     private Integer beginTimer = 6;
+    public static Game game;
 
     private String shortInteger(int roundTimer) {
         int seconds = roundTimer % 60;
@@ -367,11 +368,11 @@ public class Game implements Listener {
 
     }
 
-    public Game(Player p) {
-        beginGame();
-        joinGame(p);
-        endGame();
-        listQueue(p);
-        leaveQueue(p);
+    public Game() {
+        game = this;
+    }
+
+    public static Game getGame() {
+        return game;
     }
 }
