@@ -32,6 +32,23 @@ public class Game implements Listener {
     private boolean inProgress = false;
     private Integer beginTimer = 6;
 
+    private String shortInteger(int roundTimer) {
+        int seconds = roundTimer % 60;
+        int minutes = (roundTimer / 60) % 60;
+        int hours = (roundTimer / 60) / 60;
+
+        String stringTime = "";
+        if(hours != 0){
+            stringTime += String.valueOf(hours) + ":";
+        }
+        if(minutes != 0) {
+            stringTime += String.valueOf(minutes) + ":";
+        }
+        stringTime += String.valueOf(seconds);
+
+        return stringTime;
+    }
+
 
 
 
@@ -177,10 +194,30 @@ public class Game implements Listener {
                     roundTimer--;
                     if(roundTimer == 0) {
                         this.cancel();
-
+                        endGame();
                     }
 
+                    roundTimer--;
 
+                    ScoreboardManager manager = Bukkit.getScoreboardManager();
+                    Scoreboard scoreboard = manager.getNewScoreboard();
+                    Objective objective = scoreboard.registerNewObjective("main", "dummy", ChatColor.BOLD + "" + ChatColor.DARK_GREEN + "Tag");
+                    objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+
+                    Score hunterScore = objective.getScore(ChatColor.RED + "Hunter: " + ChatColor.WHITE + hunter.getName());
+                    Score inGameScore = objective.getScore(ChatColor.RED + "Players: " + ChatColor.WHITE + alivePlayers.size() + "/" + (queuedPlayers.size() - 1));
+                    Score roleScore = objective.getScore(ChatColor.RED + "Role: " + ChatColor.WHITE + role);
+                    Score emptyScore = objective.getScore("");
+                    Score timerScore = objective.getScore(ChatColor.RED + "Round Time: " + ChatColor.WHITE + shortInteger(roundTimer));
+
+                    roleScore.setScore(5);
+                    hunterScore.setScore(4);
+                    inGameScore.setScore(3);
+                    emptyScore.setScore(2);
+                    timerScore.setScore(1);
+
+                    p.setScoreboard(scoreboard);
 
                 }
             }.runTaskTimer(plugin, 0, 20);
@@ -207,7 +244,7 @@ public class Game implements Listener {
         Score inGameScore = objective.getScore(ChatColor.RED + "Players: " + ChatColor.WHITE + alivePlayers.size() + "/" + (queuedPlayers.size() - 1));
         Score roleScore = objective.getScore(ChatColor.RED + "Role: " + ChatColor.WHITE + role);
         Score emptyScore = objective.getScore("");
-        Score timerScore = objective.getScore(ChatColor.RED + "Round Time: " + ChatColor.WHITE + "BLANK");
+        Score timerScore = objective.getScore(ChatColor.RED + "Round Time: " + ChatColor.WHITE + shortInteger(roundTimer));
 
         roleScore.setScore(5);
         hunterScore.setScore(4);
