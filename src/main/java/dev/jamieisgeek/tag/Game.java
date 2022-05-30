@@ -140,6 +140,10 @@ public class Game implements Listener {
                         Player player = Bukkit.getPlayer(uuid);
                         player.sendMessage(prefix + beginTimer);
                     });
+
+                    if(beginTimer == 0) {
+                        this.cancel();
+                    }
                 }
             }
         }.runTaskTimer(plugin, 0, 20);
@@ -319,21 +323,6 @@ public class Game implements Listener {
         }
     }
 
-    public void PlayerAttack(Player attacker, Player attacked) {
-        if(attacker.getUniqueId() == hunterID) {
-            attacked.setGameMode(GameMode.SPECTATOR);
-            alivePlayers.remove(attacked.getUniqueId());
-
-            queuedPlayers.forEach((UUID uuid) -> {
-               Player player = Bukkit.getPlayer(uuid);
-               player.sendMessage(prefix + ChatColor.RED + attacked.getName() + ChatColor.WHITE + " has been " + ChatColor.BOLD + "" + ChatColor.RED + "eliminated" + ChatColor.stripColor("") + ChatColor.WHITE + "!");
-            });
-
-            if(alivePlayers.size() == 0) {
-                endGame();
-            }
-        }
-    }
 
     @EventHandler
     public void onPlayerHit(EntityDamageByEntityEvent e) {
@@ -345,7 +334,19 @@ public class Game implements Listener {
                 Player attacked = (Player) e.getEntity();
 
                 e.setCancelled(true);
-                PlayerAttack(attacker, attacked);
+                if(attacker.getUniqueId() == hunterID) {
+                    attacked.setGameMode(GameMode.SPECTATOR);
+                    alivePlayers.remove(attacked.getUniqueId());
+
+                    queuedPlayers.forEach((UUID uuid) -> {
+                        Player player = Bukkit.getPlayer(uuid);
+                        player.sendMessage(prefix + ChatColor.RED + attacked.getName() + ChatColor.WHITE + " has been " + ChatColor.BOLD + "" + ChatColor.RED + "eliminated" + ChatColor.stripColor("") + ChatColor.WHITE + "!");
+                    });
+
+                    if(alivePlayers.size() == 0) {
+                        endGame();
+                    }
+                }
             }
         }
     }
