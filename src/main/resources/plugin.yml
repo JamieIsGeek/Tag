@@ -1,0 +1,9 @@
+name: Tag
+version: '${project.version}'
+main: dev.jamieisgeek.tag.Tag
+api-version: 1.18
+authors: [ JamieIsGeek ]
+description: A game to play tag with your friends!
+commands:
+  tag:
+    description: Main command for Tag
