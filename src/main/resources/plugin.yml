@@ -11,7 +11,7 @@ commands:
 permissions:
   tag.*:
     description: Grants every permission for tag!
-    default: not op
+    default: op
     children:
       tag.join:
         default: not op
