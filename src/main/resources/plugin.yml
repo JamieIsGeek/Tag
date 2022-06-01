@@ -7,3 +7,24 @@ description: A game to play tag with your friends!
 commands:
   tag:
     description: Main command for Tag
+
+permissions:
+  tag.*:
+    description: Grants every permission for tag!
+    default: not op
+    children:
+      tag.join:
+        default: not op
+        description: Join the current queue!
+
+      tag.leave:
+        default: not op
+        description: Leaves the current queue!
+
+      tag.start:
+        default: op
+        description: Force starts the game!
+
+      tag.end:
+        default: op
+        description: Force ends the game!

@@ -217,7 +217,7 @@ public class Game {
 
 
                         Score hunterScore = objective.getScore(ChatColor.RED + "Hunter: " + ChatColor.WHITE + hunter.getName());
-                        Score inGameScore = objective.getScore(ChatColor.RED + "Players: " + ChatColor.WHITE + alivePlayers.size() + "/" + (queuedPlayers.size() - 1));
+                        Score inGameScore = objective.getScore(ChatColor.RED + "Alive Players: " + ChatColor.WHITE + alivePlayers.size() + "/" + (queuedPlayers.size() - 1));
                         Score roleScore = objective.getScore(ChatColor.RED + "Role: " + ChatColor.WHITE + role);
                         Score emptyScore = objective.getScore("");
                         Score timerScore = objective.getScore(ChatColor.RED + "Round Time: " + ChatColor.WHITE + shortInteger(roundTimer));
@@ -251,7 +251,7 @@ public class Game {
 
 
         Score hunterScore = objective.getScore(ChatColor.RED + "Hunter: " + ChatColor.WHITE + hunter.getName());
-        Score inGameScore = objective.getScore(ChatColor.RED + "Players: " + ChatColor.WHITE + alivePlayers.size() + "/" + (queuedPlayers.size() - 1));
+        Score inGameScore = objective.getScore(ChatColor.RED + "Alive Players: " + ChatColor.WHITE + alivePlayers.size() + "/" + (queuedPlayers.size() - 1));
         Score roleScore = objective.getScore(ChatColor.RED + "Role: " + ChatColor.WHITE + role);
         Score emptyScore = objective.getScore("");
         Score timerScore = objective.getScore(ChatColor.RED + "Round Time: " + ChatColor.WHITE + shortInteger(roundTimer));
